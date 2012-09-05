@@ -26,17 +26,33 @@
  * Simple, yet convienient... Cheers!
  */
 (function($){
-  $.fn.dataAttr = function(dataAttribute){
+  $.fn.dataAttr = function(dataAttribute, dataValue){
     if(!dataAttribute) {
       return false;
     }
 
-    var value = this.attr('data-' + dataAttribute);
+    //if dataAttribute is an object, we will use it to set a data attribute for every key
+    if (typeof(dataAttribute) == "object"){
+        for (var key in dataAttribute){
+            this.attr('data-' + key, dataAttribute[key]);
+        }
 
-    if(!value) {
-      $.error('Data attribute "' + dataAttribute + '" does not exist!');
+        return this;
     }
+    //if a value was passed, we'll set that value for the specified dataAttribute
+    else if (dataValue){
+        return this.attr('data-' + dataAttribute, dataValue);
+    }
+    //lastly, try to just return the requested dataAttribute's value from the element
+    else{
+        var value = this.attr('data-' + dataAttribute);
 
-    return value;
+        //specifically checking for undefined in case "value" ends up evaluating to false
+        if(value == undefined) {
+          $.error('Data attribute "' + dataAttribute + '" does not exist!');
+        }
+
+        return value;
+    }
   };
 })(jQuery);
